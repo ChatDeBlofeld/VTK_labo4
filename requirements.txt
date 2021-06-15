@@ -1,2 +1,4 @@
  numpy
  pyproj
+ matplotlib
+ pandas
