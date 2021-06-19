@@ -5,6 +5,7 @@ import vtk
 
 from constants import *
 from utils import quadInterpolation, toCartesian, RT90ToWGS84
+import glider_path
 
 
 def MapAreaToWGS84():
@@ -68,11 +69,7 @@ for lat, lon, alt in zip(latitudes, longitudes, elevations):
     points.InsertNextPoint(p)
     pointElevations.InsertNextValue(alt)
     x,y = quadInterpolation(lat, lon, QUAD_INTERPOLATION_ALPHAS, QUAD_INTERPOLATION_BETAS)
-    if x < 0 or x > 1 or y < 0 or y > 1:
-        pointTextureCoords.InsertNextTuple((0,0))
-    else:
-        pointTextureCoords.InsertNextTuple((x, y))
-    # pointTextureCoords.InsertNextTuple(quadInterpolation(lat, lon, QUAD_INTERPOLATION_ALPHAS, QUAD_INTERPOLATION_BETAS))
+    pointTextureCoords.InsertNextTuple(quadInterpolation(lat, lon, QUAD_INTERPOLATION_ALPHAS, QUAD_INTERPOLATION_BETAS))
 
 # Create grid
 grid = vtk.vtkStructuredGrid()
@@ -80,9 +77,6 @@ grid.SetDimensions(cols, rows, 1)
 grid.SetPoints(points)
 grid.GetPointData().SetScalars(pointElevations)
 grid.GetPointData().SetTCoords(pointTextureCoords)
-# for id, display in enumerate(toDisplay):
-#     if not display:
-#         grid.BlankPoint(id)
 
 # Export grid
 # writer = vtk.vtkStructuredGridWriter()
@@ -99,10 +93,11 @@ grid.GetPointData().SetTCoords(pointTextureCoords)
 # ctf.AddRGBPoint(700, 0.898, 0.784, 0.537)
 # ctf.AddRGBPoint(1300, 1, 1, 1)
 
-reader = vtk.vtkJPEGReader()
+reader = vtk.vtkPNGReader()
 reader.SetFileName(MAP_TEXTURE_FILE_PATH)
 
 texture = vtk.vtkTexture()
+texture.RepeatOff()
 texture.SetInputConnection(reader.GetOutputPort())
 
 mapper = vtk.vtkDataSetMapper()
@@ -117,6 +112,7 @@ gridActor.SetTexture(texture)
 
 renderer = vtk.vtkRenderer()
 renderer.AddActor(gridActor)
+renderer.AddActor(glider_path.getActor(GLIDER_GPS_DATA_FILE_PATH))
 # renderer.GetActiveCamera().SetFocalPoint(0,0,0)
 # renderer.GetActiveCamera().SetPosition(1297250.771172846, 2864648.7209518966, 5541501.618572724)
 # renderer.GetActiveCamera().SetClippingRange(0, 1_000_0000_0) 

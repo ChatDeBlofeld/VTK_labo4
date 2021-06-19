@@ -16,10 +16,13 @@ EARTH_RADIUS: int = 6371009
 PRE_COMPUTED_MESH_FILE_PATH = "raw_mesh.vtk"
 
 # Map texture
-MAP_TEXTURE_FILE_PATH = "glider_map.jpg"
+MAP_TEXTURE_FILE_PATH = "glider_map.png"
 
 # Glider travel
 GLIDER_GPS_DATA_FILE_PATH = "vtkgps.txt"
+
+# Value range of the LUT for the glider path for a smooth display
+GLIDER_PATH_LUT_RANGE = (-5, 5)
 
 # Map area, RT90 (SW, SE, NE, NW)
 MAP_AREA_RT90 = [(1349602, 7005969), (1371835, 7006362), (1371573, 7022967), (1349340, 7022573)]
