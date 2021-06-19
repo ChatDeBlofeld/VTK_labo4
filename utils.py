@@ -1,4 +1,5 @@
 from pyproj import Transformer
+import numpy as np
 import math
 import vtk
 
@@ -12,6 +13,14 @@ def RT90ToWGS84(yy, xx):
     '''
     return RT90_TO_WGS84.transform(xx, yy)
 
+def RT90ListToWGS84(coords):
+    '''
+    Transform a list of RT90 coords to WGS84
+    '''
+    a = np.array(coords)
+    a = a.T
+    return np.vstack(RT90ToWGS84(a[0], a[1])).T
+
 def toCartesian(inclination: float, azimuth: float, elevation):
     '''
     Transform spherical coord to cartesian coords.
@@ -21,16 +30,11 @@ def toCartesian(inclination: float, azimuth: float, elevation):
     https://raw.githubusercontent.com/Kitware/vtk-examples/gh-pages/src/VTKBook/Figures/Figure3-15.png?raw=true
     '''
 
-    # cartesian = vtk.vtkSphericalTransform()
     cartesian = vtk.vtkTransform()
     cartesian.RotateY(azimuth)
     cartesian.RotateX(-inclination)
     cartesian.Translate(0, 0, elevation)
 
-    # inclination = math.radians(inclination)
-    # azimuth = math.radians(azimuth)
-
-    # return cartesian.TransformPoint(elevation, inclination, azimuth)
     return cartesian.TransformPoint(0,0,0)
 
 def quadInterpolation(x, y, a, b):

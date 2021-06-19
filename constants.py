@@ -33,3 +33,12 @@ GLIDER_PATH_TUBE_RADIUS = 30
 # Matrix used to computed the interpolation of a quadrilateral
 # https://www.particleincell.com/2012/quad-interpolation/
 QUAD_INTERPOLATION_MATRIX = np.array([[1,0,0,0], [-1,1,0,0], [-1,0,0,1], [1,-1,1,-1]])
+
+# Elevation label posisition
+ELEVATION_LABEL_POSITION = (20,20)
+
+# Radius of the tubes defining the level line
+LEVEL_LINE_TUBE_RADIUS = 30
+
+# Something blueish
+LEVEL_LINE_TUBE_COLOR = (0.00,0.80,0.80)
