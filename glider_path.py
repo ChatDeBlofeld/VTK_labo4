@@ -20,7 +20,7 @@ def prepareData(file):
     df[5] = pd.to_datetime((df[4] + "T" + df[5]).astype("str"), format="%m/%d/%yT%H:%M:%S")
     df[5] = df[5].diff().dt.seconds
     # Compute elevation difference between two position
-    df[4] = df[3].diff() / df[5] * 2 if GLIDER_PATH_WEIGHTED_SEGMENTS else df[3].diff()
+    df[4] = df[3].diff() / df[5] * df[5].mean() if GLIDER_PATH_WEIGHTED_SEGMENTS else df[3].diff()
     df[4] = df[4].fillna(0) # Remove NaN
     df[4] = - df[4] # Inverse max and min to fit LUT colors
     # Transform data to WGS84
