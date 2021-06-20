@@ -20,8 +20,9 @@ def prepareData():
     elevations = np.fromfile(RAW_ELEVATIONS_FILE_PATH, dtype=np.int16)
 
     # Create a latitudes and longitudes list based on the size of the elevation matrix
-    longitudes, latitudes = np.meshgrid(np.linspace(RAW_ELEVATIONS_AREA[0][1], RAW_ELEVATIONS_AREA[1][1], RAW_ELEVATIONS_MATRIX_SIZE[0]), 
-        np.linspace(RAW_ELEVATIONS_AREA[1][0], RAW_ELEVATIONS_AREA[0][0], RAW_ELEVATIONS_MATRIX_SIZE[1]))
+    longitudes, latitudes = np.meshgrid(
+        np.linspace(RAW_ELEVATIONS_AREA[0][1], RAW_ELEVATIONS_AREA[1][1], RAW_ELEVATIONS_MATRIX_SIZE[1]), 
+        np.linspace(RAW_ELEVATIONS_AREA[1][0], RAW_ELEVATIONS_AREA[0][0], RAW_ELEVATIONS_MATRIX_SIZE[0]))
     latitudes, longitudes = latitudes.flatten(), longitudes.flatten()
 
     # Define bounds to select points to display. We chose to keep the bounding box of the map area
@@ -63,7 +64,9 @@ def getActor():
         p = toCartesian(lat, lon, EARTH_RADIUS + alt)
         points.InsertNextPoint(p)
         pointElevations.InsertNextValue(alt)
-        pointTextureCoords.InsertNextTuple(quadInterpolation(lat, lon, QUAD_INTERPOLATION_ALPHAS, QUAD_INTERPOLATION_BETAS))
+        pointTextureCoords.InsertNextTuple(
+            quadInterpolation(lat, lon, QUAD_INTERPOLATION_ALPHAS, QUAD_INTERPOLATION_BETAS)
+        )
 
     # Create grid
     grid = vtk.vtkStructuredGrid()

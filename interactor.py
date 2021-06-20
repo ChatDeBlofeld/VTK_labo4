@@ -1,5 +1,6 @@
 import vtk
-from constants import EARTH_RADIUS, ELEVATION_LABEL_POSITION, LEVEL_LINE_TUBE_COLOR, LEVEL_LINE_TUBE_RADIUS, ELEVATION_LABEL_FONT_SIZE
+from constants import EARTH_RADIUS, ELEVATION_LABEL_POSITION, LEVEL_LINE_TUBE_COLOR, \
+    LEVEL_LINE_TUBE_RADIUS, ELEVATION_LABEL_FONT_SIZE
 
 # https://kitware.github.io/vtk-examples/site/Python/Picking/HighlightPickedActor/
 class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
@@ -29,7 +30,7 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         # thus detects the mouse outside the Prop.
         # So PropPicker provides us a reliable way to
         # trigger events only if the mouse really is
-        # on the Prop, but does not provide the dataset.
+        # on the Prop, but sadly does not provide the dataset.
         self.pointPicker = vtk.vtkPointPicker()
         self.pointPicker.PickFromListOn()
         self.pointPicker.AddPickList(mapActor)

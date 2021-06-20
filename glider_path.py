@@ -7,11 +7,15 @@ from utils import RT90ToWGS84, toCartesian
 
 def prepareData(file):
     '''
-    Read and transforme glider path data to be usable
+    Read and transforme glider path data to be usable.
+    Return a list of cartesian coords for each point in the path
+    and another list with the associated elevation diffs between
+    two measure.
     '''
 
     # Read coordinates and elevations
-    df = pd.read_table(file, header=None, skiprows=[0], usecols=[1,2,3,4,5], delim_whitespace=True, dtype={1:np.int32, 2:np.int32, 3:np.float64})
+    df = pd.read_table(file, header=None, skiprows=[0], usecols=[1,2,3,4,5],
+        delim_whitespace=True, dtype={1:np.int32, 2:np.int32, 3:np.float64})
     # Compute time interval between two measures
     df[5] = pd.to_datetime((df[4] + "T" + df[5]).astype("str"), format="%m/%d/%yT%H:%M:%S")
     df[5] = df[5].diff().dt.seconds
