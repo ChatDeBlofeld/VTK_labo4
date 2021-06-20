@@ -74,13 +74,13 @@ def getActor():
 
     # Clip mesh to the map area
     areaClipFunction = vtk.vtkImplicitBoolean()
-    areaClipFunction.SetOperationTypeToUnion()
+    areaClipFunction.SetOperationTypeToIntersection()
 
     p0 = np.array([0,0,0])
-    for i, (p1, p2) in enumerate(zip(MAP_AREA_WGS84, np.roll(MAP_AREA_WGS84, -10))):
+    for p1, p2 in zip(MAP_AREA_WGS84, np.roll(MAP_AREA_WGS84, -10)):
         p1 = np.array(toCartesian(*p1, 1))
         p2 = np.array(toCartesian(*p2, 1))
-        n = np.cross(p1 - p0, p2 - p0)
+        n = -np.cross(p1 - p0, p2 - p0)
         plane = vtk.vtkPlane()
         plane.SetNormal(n)
         areaClipFunction.AddFunction(plane)
@@ -88,6 +88,7 @@ def getActor():
     clipper = vtk.vtkClipDataSet()
     clipper.SetInputData(grid)
     clipper.SetClipFunction(areaClipFunction)
+    clipper.InsideOutOn()
     clipper.Update()
 
     # Load texture
