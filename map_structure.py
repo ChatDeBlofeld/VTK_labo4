@@ -72,8 +72,26 @@ def getActor():
     grid.GetPointData().SetScalars(pointElevations)
     grid.GetPointData().SetTCoords(pointTextureCoords)
 
+    # Clip mesh to the map area
+    areaClipFunction = vtk.vtkImplicitBoolean()
+    areaClipFunction.SetOperationTypeToUnion()
+
+    p0 = np.array([0,0,0])
+    for i, (p1, p2) in enumerate(zip(MAP_AREA_WGS84, np.roll(MAP_AREA_WGS84, -10))):
+        p1 = np.array(toCartesian(*p1, 1))
+        p2 = np.array(toCartesian(*p2, 1))
+        n = np.cross(p1 - p0, p2 - p0)
+        plane = vtk.vtkPlane()
+        plane.SetNormal(n)
+        areaClipFunction.AddFunction(plane)
+
+    clipper = vtk.vtkClipDataSet()
+    clipper.SetInputData(grid)
+    clipper.SetClipFunction(areaClipFunction)
+    clipper.Update()
+
     # Load texture
-    reader = vtk.vtkPNGReader()
+    reader = vtk.vtkJPEGReader()
     reader.SetFileName(MAP_TEXTURE_FILE_PATH)
 
     texture = vtk.vtkTexture()
@@ -82,7 +100,7 @@ def getActor():
 
     # Create mapper
     mapper = vtk.vtkDataSetMapper()
-    mapper.SetInputData(grid)
+    mapper.SetInputConnection(clipper.GetOutputPort())
     mapper.ScalarVisibilityOff()
 
     # Create actor

@@ -1,5 +1,5 @@
 import vtk
-from constants import EARTH_RADIUS, ELEVATION_LABEL_POSITION, LEVEL_LINE_TUBE_COLOR, LEVEL_LINE_TUBE_RADIUS
+from constants import EARTH_RADIUS, ELEVATION_LABEL_POSITION, LEVEL_LINE_TUBE_COLOR, LEVEL_LINE_TUBE_RADIUS, ELEVATION_LABEL_FONT_SIZE
 
 # https://kitware.github.io/vtk-examples/site/Python/Picking/HighlightPickedActor/
 class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
@@ -13,6 +13,10 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         # Text label displaying the elevation
         self.elevationLabelActor = vtk.vtkTextActor()
         self.elevationLabelActor.GetTextProperty().SetColor(0, 0, 0)
+        self.elevationLabelActor.GetTextProperty().SetBackgroundColor(1, 1, 1)
+        self.elevationLabelActor.GetTextProperty().SetBackgroundOpacity(1)
+        self.elevationLabelActor.GetTextProperty().SetFontSize(ELEVATION_LABEL_FONT_SIZE)
+        self.elevationLabelActor.GetTextProperty().BoldOn()
         self.elevationLabelActor.SetPosition(ELEVATION_LABEL_POSITION)
         self.elevationLabelActor.VisibilityOff()
 
@@ -20,10 +24,18 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         self.levelLineActor = vtk.vtkActor()
         self.levelLineActor.GetProperty().SetColor(LEVEL_LINE_TUBE_COLOR)
 
-        # Picker to select the hovered point on our map
-        self.mapPicker = vtk.vtkPointPicker()
-        self.mapPicker.PickFromListOn()
-        self.mapPicker.AddPickList(mapActor)
+        # Pickers to select the hovered point on our map.
+        # We need the two since PointPicker needs tolerance
+        # thus detects the mouse outside the Prop.
+        # So PropPicker provides us a reliable way to
+        # trigger events only if the mouse really is
+        # on the Prop, but does not provide the dataset.
+        self.pointPicker = vtk.vtkPointPicker()
+        self.pointPicker.PickFromListOn()
+        self.pointPicker.AddPickList(mapActor)
+        self.propPicker = vtk.vtkPropPicker()
+        self.propPicker.PickFromListOn()
+        self.propPicker.AddPickList(mapActor)
 
         # Pipeline for creating level lines
         self.cuttingFunction = vtk.vtkSphere()
@@ -55,12 +67,13 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
     def mouseMoveEvent(self, obj, event):
         # Get the hovered actor
         x,y = self.GetInteractor().GetEventPosition()
-        self.mapPicker.Pick(x, y, 0, self.GetDefaultRenderer())
-        actor = self.mapPicker.GetActor()
+        self.pointPicker.Pick(x, y, 0, self.GetDefaultRenderer())
+        self.propPicker.Pick(x, y, 0, self.GetDefaultRenderer())
+        actor = self.propPicker.GetActor()
 
         if actor == self.mapActor:
             # Updating level line with the new elevation
-            elevation = self.elevations.GetValue(self.mapPicker.GetPointId())
+            elevation = self.elevations.GetValue(self.pointPicker.GetPointId())
             self.cuttingFunction.SetRadius(EARTH_RADIUS + elevation)
             self.cutter.Update()
 

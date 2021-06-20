@@ -16,7 +16,7 @@ EARTH_RADIUS: int = 6371009
 PRE_COMPUTED_MESH_FILE_PATH = "raw_mesh.vtk"
 
 # Map texture
-MAP_TEXTURE_FILE_PATH = "glider_map.png"
+MAP_TEXTURE_FILE_PATH = "glider_map.jpg"
 
 # Glider travel
 GLIDER_GPS_DATA_FILE_PATH = "vtkgps.txt"
@@ -34,8 +34,11 @@ GLIDER_PATH_TUBE_RADIUS = 30
 # https://www.particleincell.com/2012/quad-interpolation/
 QUAD_INTERPOLATION_MATRIX = np.array([[1,0,0,0], [-1,1,0,0], [-1,0,0,1], [1,-1,1,-1]])
 
-# Elevation label posisition
+# Elevation label posisition (from bottom right of the screen, in pixels)
 ELEVATION_LABEL_POSITION = (20,20)
+
+# Font size in points
+ELEVATION_LABEL_FONT_SIZE = 24
 
 # Radius of the tubes defining the level line
 LEVEL_LINE_TUBE_RADIUS = 30

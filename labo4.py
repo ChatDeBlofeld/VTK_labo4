@@ -16,7 +16,7 @@ renderer.AddActor(glider_path.getActor(GLIDER_GPS_DATA_FILE_PATH))
 
 renWin = vtk.vtkRenderWindow()
 renWin.AddRenderer(renderer)
-renWin.SetSize(800, 800)
+renWin.SetSize(1200, 800)
 
 style = interactor.LevelLineTrackballCamera(mapActor)
 style.SetDefaultRenderer(renderer)
