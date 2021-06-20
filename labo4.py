@@ -1,18 +1,22 @@
+from utils import toCartesian
 import vtk
 import glider_path
 import map_structure
 import interactor
-from constants import GLIDER_GPS_DATA_FILE_PATH
+from constants import CAMERA_ALTITUDE, CAMERA_POSITION, CAMERA_ROLL, EARTH_RADIUS, GLIDER_GPS_DATA_FILE_PATH
 
 mapActor = map_structure.getActor()
+gliderPathActor = glider_path.getActor(GLIDER_GPS_DATA_FILE_PATH)
 
 renderer = vtk.vtkRenderer()
 renderer.SetBackground(1,1,1)
 renderer.AddActor(mapActor)
-renderer.AddActor(glider_path.getActor(GLIDER_GPS_DATA_FILE_PATH))
-# renderer.GetActiveCamera().SetFocalPoint(0,0,0)
-# renderer.GetActiveCamera().SetPosition(1297250.771172846, 2864648.7209518966, 5541501.618572724)
-# renderer.GetActiveCamera().SetClippingRange(0, 1_000_0000_0) 
+renderer.AddActor(gliderPathActor)
+renderer.GetActiveCamera().SetFocalPoint(toCartesian(*CAMERA_POSITION, EARTH_RADIUS))
+renderer.GetActiveCamera().SetPosition(toCartesian(*CAMERA_POSITION, EARTH_RADIUS + CAMERA_ALTITUDE))
+renderer.GetActiveCamera().Roll(CAMERA_ROLL)
+renderer.GetActiveCamera().SetClippingRange(1, 2 * CAMERA_ALTITUDE)
+
 
 renWin = vtk.vtkRenderWindow()
 renWin.AddRenderer(renderer)

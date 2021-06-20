@@ -45,3 +45,14 @@ LEVEL_LINE_TUBE_RADIUS = 30
 
 # Something blueish
 LEVEL_LINE_TUBE_COLOR = (0.00,0.80,0.80)
+
+# In WGS84
+CAMERA_POSITION = (63.2, 13.05)
+
+# [m]
+CAMERA_ALTITUDE = 45_000
+
+# In degrees
+CAMERA_ROLL = -3.2
+
+
