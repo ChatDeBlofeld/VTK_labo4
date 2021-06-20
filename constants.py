@@ -40,6 +40,9 @@ ELEVATION_LABEL_POSITION = (20,20)
 # Font size in points
 ELEVATION_LABEL_FONT_SIZE = 24
 
+# Content of the elevation label, including formatting
+ELEVATION_LABEL_CONTENT = "Altitude : {:.1f} m"
+
 # Radius of the tubes defining the contour line [m]
 CONTOUR_LINE_TUBE_RADIUS = 30
 

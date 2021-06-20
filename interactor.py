@@ -1,6 +1,7 @@
 import vtk
+import numpy as np
 from constants import EARTH_RADIUS, ELEVATION_LABEL_POSITION, CONTOUR_LINE_TUBE_COLOR, \
-    CONTOUR_LINE_TUBE_RADIUS, ELEVATION_LABEL_FONT_SIZE
+    CONTOUR_LINE_TUBE_RADIUS, ELEVATION_LABEL_FONT_SIZE, ELEVATION_LABEL_CONTENT
 
 # https://kitware.github.io/vtk-examples/site/Python/Picking/HighlightPickedActor/
 class ContourLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
@@ -25,18 +26,11 @@ class ContourLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         self.contourLineActor = vtk.vtkActor()
         self.contourLineActor.GetProperty().SetColor(CONTOUR_LINE_TUBE_COLOR)
 
-        # Pickers to select the hovered point on our map.
-        # We need the two since PointPicker needs tolerance
-        # thus detects the mouse outside the Prop.
-        # So PropPicker provides us a reliable way to
-        # trigger events only if the mouse really is
-        # on the Prop, but sadly does not provide the dataset.
-        self.pointPicker = vtk.vtkPointPicker()
-        self.pointPicker.PickFromListOn()
-        self.pointPicker.AddPickList(mapActor)
-        self.propPicker = vtk.vtkPropPicker()
-        self.propPicker.PickFromListOn()
-        self.propPicker.AddPickList(mapActor)
+        # Pickers to select the hovered cell on our map.
+        self.cellPicker = vtk.vtkCellPicker()
+        self.cellPicker.PickFromListOn()
+        self.cellPicker.AddPickList(mapActor)
+        self.cellPicker.SetTolerance(0)
 
         # Pipeline for creating contour lines
         self.cutFunction = vtk.vtkSphere()
@@ -68,18 +62,31 @@ class ContourLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
     def mouseMoveEvent(self, obj, event):
         # Get the hovered actor
         x,y = self.GetInteractor().GetEventPosition()
-        self.pointPicker.Pick(x, y, 0, self.GetDefaultRenderer())
-        self.propPicker.Pick(x, y, 0, self.GetDefaultRenderer())
-        actor = self.propPicker.GetActor()
+        self.cellPicker.Pick(x, y, 0, self.GetDefaultRenderer())
+        actor = self.cellPicker.GetActor()
 
         if actor == self.mapActor:
-            # Updating contour line with the new elevation
-            elevation = self.elevations.GetValue(self.pointPicker.GetPointId())
+            # Get points defining the hovered cell
+            points = vtk.vtkIdList()
+            self.mapActor.GetMapper().GetInput().GetCellPoints(self.cellPicker.GetCellId(), points)
+
+            # Get elevation for each point
+            elevations = [self.elevations.GetValue(points.GetId(i)) for i in range(points.GetNumberOfIds())]       
+
+            # Interpolate elevation depending on the mouse position in the cell
+            elevation = 0
+            x,y,_ = self.cellPicker.GetPCoords()
+            for i, e in enumerate(elevations):
+                a = 1 - x if i % 3 == 0 else x
+                b = 1 - y if i < 2 else y
+                elevation += a * b * e
+
+            # Update elevation in the cut function
             self.cutFunction.SetRadius(EARTH_RADIUS + elevation)
             self.cutter.Update()
 
-            # Updating elevation label
-            self.elevationLabelActor.SetInput("Altitude : {} m".format(elevation))
+            # Update elevation label
+            self.elevationLabelActor.SetInput(ELEVATION_LABEL_CONTENT.format(elevation))
 
             self.elevationLabelActor.VisibilityOn()
             self.contourLineActor.VisibilityOn()
