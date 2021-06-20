@@ -11,7 +11,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-S'assurer du bon mapping des différents fichiers sources (modifiable dans `constants.py`) et lancer avec :
+S'assurer du bon mapping des différents fichiers de données (modifiable dans `constants.py`) et lancer avec :
 
 ```
 python labo4.py
