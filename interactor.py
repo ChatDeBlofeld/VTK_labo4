@@ -38,7 +38,7 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         self.propPicker.AddPickList(mapActor)
 
         # Pipeline for creating level lines
-        self.cuttingFunction = vtk.vtkSphere()
+        self.cutFunction = vtk.vtkSphere()
 
         self.cutter = vtk.vtkCutter()
 
@@ -50,7 +50,7 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         self.mapper = vtk.vtkDataSetMapper()
         self.mapper.ScalarVisibilityOff()
 
-        self.cutter.SetCutFunction(self.cuttingFunction)
+        self.cutter.SetCutFunction(self.cutFunction)
         self.cutter.SetInputData(self.mapActor.GetMapper().GetInput())
 
         self.stripper.SetInputConnection(self.cutter.GetOutputPort())
@@ -74,7 +74,7 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         if actor == self.mapActor:
             # Updating level line with the new elevation
             elevation = self.elevations.GetValue(self.pointPicker.GetPointId())
-            self.cuttingFunction.SetRadius(EARTH_RADIUS + elevation)
+            self.cutFunction.SetRadius(EARTH_RADIUS + elevation)
             self.cutter.Update()
 
             # Updating elevation label
