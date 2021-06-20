@@ -21,7 +21,10 @@ MAP_TEXTURE_FILE_PATH = "glider_map.jpg"
 # Glider travel
 GLIDER_GPS_DATA_FILE_PATH = "vtkgps.txt"
 
-# Value range of the LUT for the glider path for a smooth display
+# Use time delta too weight the altitude difference between 2 measure
+GLIDER_PATH_WEIGHTED_SEGMENTS = False
+
+# Value range of the LUT for the glider path for a smooth display [m]
 GLIDER_PATH_LUT_RANGE = (-5, 5)
 
 # Map area, RT90 (SW, SE, NE, NW)
@@ -34,13 +37,13 @@ GLIDER_PATH_TUBE_RADIUS = 30
 # https://www.particleincell.com/2012/quad-interpolation/
 QUAD_INTERPOLATION_MATRIX = np.array([[1,0,0,0], [-1,1,0,0], [-1,0,0,1], [1,-1,1,-1]])
 
-# Elevation label posisition (from bottom right of the screen, in pixels)
+# Elevation label position (from bottom right of the screen, in pixels)
 ELEVATION_LABEL_POSITION = (20,20)
 
 # Font size in points
 ELEVATION_LABEL_FONT_SIZE = 24
 
-# Radius of the tubes defining the level line
+# Radius of the tubes defining the level line [m]
 LEVEL_LINE_TUBE_RADIUS = 30
 
 # Something blueish
