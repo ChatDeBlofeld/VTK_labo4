@@ -5,6 +5,7 @@ import map_structure
 import interactor
 from constants import CAMERA_ALTITUDE, CAMERA_POSITION, CAMERA_ROLL, EARTH_RADIUS, GLIDER_GPS_DATA_FILE_PATH
 
+# Generate map and glider path actors
 mapActor = map_structure.getActor()
 gliderPathActor = glider_path.getActor(GLIDER_GPS_DATA_FILE_PATH)
 
@@ -12,17 +13,19 @@ renderer = vtk.vtkRenderer()
 renderer.SetBackground(1,1,1)
 renderer.AddActor(mapActor)
 renderer.AddActor(gliderPathActor)
+
+# Set camera above the map area
 renderer.GetActiveCamera().SetFocalPoint(toCartesian(*CAMERA_POSITION, EARTH_RADIUS))
 renderer.GetActiveCamera().SetPosition(toCartesian(*CAMERA_POSITION, EARTH_RADIUS + CAMERA_ALTITUDE))
 renderer.GetActiveCamera().Roll(CAMERA_ROLL)
 renderer.GetActiveCamera().SetClippingRange(1, 2 * CAMERA_ALTITUDE)
 
-
 renWin = vtk.vtkRenderWindow()
 renWin.AddRenderer(renderer)
 renWin.SetSize(1200, 800)
 
-style = interactor.LevelLineTrackballCamera(mapActor)
+# Use our custom style to display contour lines
+style = interactor.ContourLineTrackballCamera(mapActor)
 style.SetDefaultRenderer(renderer)
 style.lateInit()
 

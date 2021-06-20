@@ -1,9 +1,9 @@
 import vtk
-from constants import EARTH_RADIUS, ELEVATION_LABEL_POSITION, LEVEL_LINE_TUBE_COLOR, \
-    LEVEL_LINE_TUBE_RADIUS, ELEVATION_LABEL_FONT_SIZE
+from constants import EARTH_RADIUS, ELEVATION_LABEL_POSITION, CONTOUR_LINE_TUBE_COLOR, \
+    CONTOUR_LINE_TUBE_RADIUS, ELEVATION_LABEL_FONT_SIZE
 
 # https://kitware.github.io/vtk-examples/site/Python/Picking/HighlightPickedActor/
-class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
+class ContourLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
     def __init__(self, mapActor):
         self.AddObserver("MouseMoveEvent", self.mouseMoveEvent)
         self.mapActor = mapActor
@@ -21,9 +21,9 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         self.elevationLabelActor.SetPosition(ELEVATION_LABEL_POSITION)
         self.elevationLabelActor.VisibilityOff()
 
-        # Actor displaying our line level
-        self.levelLineActor = vtk.vtkActor()
-        self.levelLineActor.GetProperty().SetColor(LEVEL_LINE_TUBE_COLOR)
+        # Actor displaying our countour lines
+        self.contourLineActor = vtk.vtkActor()
+        self.contourLineActor.GetProperty().SetColor(CONTOUR_LINE_TUBE_COLOR)
 
         # Pickers to select the hovered point on our map.
         # We need the two since PointPicker needs tolerance
@@ -38,7 +38,7 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         self.propPicker.PickFromListOn()
         self.propPicker.AddPickList(mapActor)
 
-        # Pipeline for creating level lines
+        # Pipeline for creating contour lines
         self.cutFunction = vtk.vtkSphere()
 
         self.cutter = vtk.vtkCutter()
@@ -46,7 +46,7 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         self.stripper = vtk.vtkStripper()
 
         self.filter = vtk.vtkTubeFilter()
-        self.filter.SetRadius(LEVEL_LINE_TUBE_RADIUS)
+        self.filter.SetRadius(CONTOUR_LINE_TUBE_RADIUS)
 
         self.mapper = vtk.vtkDataSetMapper()
         self.mapper.ScalarVisibilityOff()
@@ -59,11 +59,11 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         self.mapper.SetInputConnection(self.filter.GetOutputPort())
 
         # Add mapper to our actor
-        self.levelLineActor.SetMapper(self.mapper)
+        self.contourLineActor.SetMapper(self.mapper)
 
     def lateInit(self):
         self.GetDefaultRenderer().AddActor(self.elevationLabelActor)
-        self.GetDefaultRenderer().AddActor(self.levelLineActor)
+        self.GetDefaultRenderer().AddActor(self.contourLineActor)
 
     def mouseMoveEvent(self, obj, event):
         # Get the hovered actor
@@ -73,7 +73,7 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
         actor = self.propPicker.GetActor()
 
         if actor == self.mapActor:
-            # Updating level line with the new elevation
+            # Updating contour line with the new elevation
             elevation = self.elevations.GetValue(self.pointPicker.GetPointId())
             self.cutFunction.SetRadius(EARTH_RADIUS + elevation)
             self.cutter.Update()
@@ -82,12 +82,12 @@ class LevelLineTrackballCamera(vtk.vtkInteractorStyleTrackballCamera):
             self.elevationLabelActor.SetInput("Altitude : {} m".format(elevation))
 
             self.elevationLabelActor.VisibilityOn()
-            self.levelLineActor.VisibilityOn()
+            self.contourLineActor.VisibilityOn()
             
         else:
             # Hiding actors when not hovering the map
             self.elevationLabelActor.VisibilityOff()
-            self.levelLineActor.VisibilityOff()
+            self.contourLineActor.VisibilityOff()
 
         # Force rendering
         self.GetInteractor().Render()

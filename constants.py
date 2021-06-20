@@ -40,11 +40,11 @@ ELEVATION_LABEL_POSITION = (20,20)
 # Font size in points
 ELEVATION_LABEL_FONT_SIZE = 24
 
-# Radius of the tubes defining the level line [m]
-LEVEL_LINE_TUBE_RADIUS = 30
+# Radius of the tubes defining the contour line [m]
+CONTOUR_LINE_TUBE_RADIUS = 30
 
 # Something blueish
-LEVEL_LINE_TUBE_COLOR = (0.00,0.80,0.80)
+CONTOUR_LINE_TUBE_COLOR = (0.00,0.80,0.80)
 
 # In WGS84
 CAMERA_POSITION = (63.2, 13.05)
